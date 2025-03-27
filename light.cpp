@@ -4,7 +4,7 @@ int pirPin = 2;         // PIR motion sensor
 int ledPins[] = {3, 5, 6, 9, 10};  // 5 LEDs
 int numLEDs = 5;        // Number of LEDs
 int batteryPin = A1;    // Battery level pin
-int dimThreshold = 200; // Battery level for dimming
+int dimThreshold = 250; // Battery level for dimming
 int minBatteryLevel = 500;  // Critical battery level (below which we turn off LEDs)
 
 void setup() {
@@ -28,6 +28,7 @@ void loop() {
   Serial.print("\tBattery Level: ");
   Serial.println(batteryLevel);
 
+  
   if (lightLevel < 500 && motionDetected == HIGH) {  // Only act if it's dark and motion detected
     if (batteryLevel < dimThreshold) {
       // Dim the LEDs if battery is critically low
@@ -54,4 +55,3 @@ void loop() {
 
   delay(2000);  // Delay for stability
 }
-
