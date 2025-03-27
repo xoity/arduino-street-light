@@ -1,4 +1,3 @@
-// Pin assignments
 int ldrPin = A0;        // Potentiometer (simulating LDR) connected to Analog Pin A0
 int pirPin = 2;         // PIR motion sensor connected to Digital Pin 2
 int ledPins[] = {9, 10, 11, 12, 13};  // 5 LEDs connected to Digital Pins 9, 10, 11, 12, 13
@@ -24,7 +23,7 @@ void loop() {
   Serial.print(lightLevel);
   Serial.print("\tMotion Detected: ");
   Serial.print(motionDetected);
-  Serial.print("\tBattery Level: ");`
+  Serial.print("\tBattery Level: ");
   Serial.println(batteryLevel);
 
   // Simulate solar power by adjusting the LED brightness
