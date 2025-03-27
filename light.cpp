@@ -1,22 +1,24 @@
-int ldrPin = A0;        // Potentiometer (simulating LDR) connected to Analog Pin A0
-int pirPin = 2;         // PIR motion sensor connected to Digital Pin 2
-int ledPins[] = {9, 10, 11, 12, 13};  // 5 LEDs connected to Digital Pins 9, 10, 11, 12, 13
+// Pin assignments
+int ldrPin = A0;        // Light sensor (simulated with potentiometer)
+int pirPin = 2;         // PIR motion sensor
+int ledPins[] = {3, 5, 6, 9, 10};  // 5 LEDs
 int numLEDs = 5;        // Number of LEDs
-int batteryPin = A1;    // Battery voltage reading pin (simulate battery voltage)
-int minBatteryLevel = 500;  // Minimum battery level before dimming lights
+int batteryPin = A1;    // Battery level pin
+int dimThreshold = 200; // Battery level for dimming
+int minBatteryLevel = 500;  // Critical battery level (below which we turn off LEDs)
 
 void setup() {
-  pinMode(pirPin, INPUT);  // PIR sensor pin as input
+  pinMode(pirPin, INPUT);  
   for (int i = 0; i < numLEDs; i++) {
-    pinMode(ledPins[i], OUTPUT);  // LED pins as output
+    pinMode(ledPins[i], OUTPUT);
   }
   Serial.begin(9600);
 }
 
 void loop() {
-  int lightLevel = analogRead(ldrPin);   // Read light level (from potentiometer)
-  int motionDetected = digitalRead(pirPin); // Read motion detection status
-  int batteryLevel = analogRead(batteryPin);  // Read battery level (simulate solar power)
+  int lightLevel = analogRead(ldrPin);   // Read light level
+  int motionDetected = digitalRead(pirPin); // Read motion status
+  int batteryLevel = analogRead(batteryPin);  // Read battery level
 
   // Print debug info
   Serial.print("Light Level: ");
@@ -26,24 +28,30 @@ void loop() {
   Serial.print("\tBattery Level: ");
   Serial.println(batteryLevel);
 
-  // Simulate solar power by adjusting the LED brightness
-  if (batteryLevel < minBatteryLevel) {
-    // If battery is low, reduce brightness or turn off lights
-    for (int i = 0; i < numLEDs; i++) {
-      digitalWrite(ledPins[i], LOW);  // Turn off lights to save energy
-    }
-  } else {
-    // Normal operation: turn on lights based on light level and motion
-    if (lightLevel < 500 && motionDetected == HIGH) {  // If it's dark and motion is detected
+  if (lightLevel < 500 && motionDetected == HIGH) {  // Only act if it's dark and motion detected
+    if (batteryLevel < dimThreshold) {
+      // Dim the LEDs if battery is critically low
       for (int i = 0; i < numLEDs; i++) {
-        digitalWrite(ledPins[i], HIGH);  // Turn on all LEDs (streetlights)
+        analogWrite(ledPins[i], 100);  // Dim brightness (0-255)
+      }
+    } else if (batteryLevel >= dimThreshold && batteryLevel < minBatteryLevel) {
+      // Normal brightness when battery is sufficient but not fully charged
+      for (int i = 0; i < numLEDs; i++) {
+        analogWrite(ledPins[i], 255);  // Full brightness
       }
     } else {
-      // Keep LEDs OFF if no motion or it's bright
+      // If battery is fully charged, turn on at full brightness
       for (int i = 0; i < numLEDs; i++) {
-        digitalWrite(ledPins[i], LOW);
+        digitalWrite(ledPins[i], HIGH);
       }
     }
+  } else {
+    // If it's bright or no motion, keep LEDs OFF
+    for (int i = 0; i < numLEDs; i++) {
+      digitalWrite(ledPins[i], LOW);
+    }
   }
-  delay(500);  // Delay to stabilize readings
+
+  delay(2000);  // Delay for stability
 }
+
