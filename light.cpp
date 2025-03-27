@@ -32,7 +32,7 @@ void loop() {
     if (batteryLevel < dimThreshold) {
       // Dim the LEDs if battery is critically low
       for (int i = 0; i < numLEDs; i++) {
-        analogWrite(ledPins[i], 100);  // Dim brightness (0-255)
+        analogWrite(ledPins[i], 100);  // Dim brightness 
       }
     } else if (batteryLevel >= dimThreshold && batteryLevel < minBatteryLevel) {
       // Normal brightness when battery is sufficient but not fully charged
